@@ -1,10 +1,10 @@
 "use client";
-import {useEffect,useState} from "react";import Link from "next/link";import {motion} from "framer-motion";import {Plus,FileText,Wallet,ArrowUpRight,Search,Trash2,CalendarDays,Wrench} from "lucide-react";import Topbar from "@/components/Topbar";import {Invoice,money,totalOf} from "@/lib/types";
+import {useEffect,useState} from "react";import Link from "next/link";import {motion} from "framer-motion";import {Plus,FileText,Wallet,ArrowUpRight,Search,Trash2,CalendarDays,Wrench} from "lucide-react";import Topbar from "@/components/Topbar";import {Invoice,money,totalOf} from "@/lib/types";import {getInvoices,deleteInvoice} from "@/lib/storage";
 export default function Home(){
  const [rows,setRows]=useState<Invoice[]>([]),[loading,setLoading]=useState(true),[query,setQuery]=useState(""),[error,setError]=useState("");
- async function load(){setLoading(true);try{const r=await fetch("/api/invoices");const d=await r.json();if(!r.ok)throw Error(d.error);setRows(d)}catch(e){setError(e instanceof Error?e.message:"Gagal memuat nota")}finally{setLoading(false)}}
+ async function load(){setLoading(true);try{setRows(getInvoices());setError("")}catch(e){setError(e instanceof Error?e.message:"Gagal memuat nota")}finally{setLoading(false)}}
  useEffect(()=>{load()},[]);
- async function remove(id:string){if(!confirm("Hapus nota ini?"))return;const r=await fetch(`/api/invoices/${id}`,{method:"DELETE"});if(r.ok)load();else alert((await r.json()).error)}
+ async function remove(id:string){if(!confirm("Hapus nota ini?"))return;deleteInvoice(id);load()}
  const filtered=rows.filter(x=>(x.invoice_number+" "+x.buyer_name).toLowerCase().includes(query.toLowerCase()));
  const revenue=rows.reduce((s,x)=>s+Math.max(0,totalOf(x.items||[])-Number(x.discount||0)),0);
  return <div className="shell"><Topbar/><main className="page">
@@ -16,7 +16,7 @@ export default function Home(){
  </div>
  <section style={{marginTop:42}}>
  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:12,marginBottom:17,flexWrap:"wrap"}}><div><div className="eyebrow">YOUR WORKSPACE</div><h2 className="section-title" style={{fontSize:25,margin:"5px 0 0"}}>Daftar Nota</h2></div><div style={{position:"relative",width:260,maxWidth:"100%"}}><Search size={16} style={{position:"absolute",left:11,top:12}}/><input className="input" style={{paddingLeft:36}} placeholder="Cari nota / pembeli..." value={query} onChange={e=>setQuery(e.target.value)}/></div></div>
- {error&&<div className="card" style={{padding:15,background:"#ffe3df",marginBottom:15}}>{error}<br/><small>Pastikan Supabase sudah disiapkan.</small></div>}
+ {error&&<div className="card" style={{padding:15,background:"#ffe3df",marginBottom:15}}>{error}<br/><small>Data nota disimpan di penyimpanan lokal browser perangkat ini.</small></div>}
  {loading?<div className="card empty">Memuat data nota...</div>:filtered.length===0?<motion.div className="card empty" initial={{opacity:0}} animate={{opacity:1}}><div className="empty-icon"><FileText size={32}/></div><div className="eyebrow">NOTHING HERE — YET</div><h2 style={{fontSize:26,margin:"10px 0"}}>{query?"Nota tidak ditemukan":"Belum ada nota pembayaran"}</h2><p className="muted" style={{marginBottom:24}}>{query?"Coba kata kunci lain.":"Mulai dari nota pertama untuk bengkel Honda."}</p>{!query&&<Link href="/new" className="btn btn-primary"><Plus size={18}/> Buat Nota Pertama</Link>}</motion.div>:
  <div className="card" style={{overflow:"hidden"}}>{filtered.map((x,i)=><motion.div key={x.id} initial={{opacity:0,x:-10}} animate={{opacity:1,x:0}} transition={{delay:i*.04}} style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:14,padding:"16px 18px",borderBottom:"1px solid #ddd",flexWrap:"wrap"}}>
  <div style={{display:"flex",alignItems:"center",gap:13}}><div style={{width:42,height:42,background:"#f5d547",border:"2px solid #171717",display:"grid",placeItems:"center"}}><FileText/></div><div><b>{x.buyer_name||"Tanpa nama"}</b><div className="eyebrow" style={{marginTop:4}}>{x.invoice_number} · {x.invoice_date}</div></div></div>

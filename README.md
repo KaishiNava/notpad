@@ -1,24 +1,27 @@
-# NotPad — Workshop Invoice
+# NotPad — Workshop Invoice (Local Edition)
 
-Aplikasi nota pembayaran bengkel dengan Next.js App Router, TypeScript, Supabase, Tailwind CSS, Framer Motion, dan print stylesheet.
+Aplikasi nota pembayaran bengkel berbasis Next.js App Router + TypeScript. Data disimpan di **localStorage browser** pada perangkat yang digunakan. Tidak membutuhkan Supabase, akun, API key, atau backend database eksternal.
 
 ## Fitur
-- Dashboard daftar nota, pencarian, ringkasan jumlah nota dan transaksi.
-- Halaman awal kosong dengan tombol Buat Nota Baru.
+- Dashboard kosong saat belum ada nota, daftar nota, pencarian, ringkasan transaksi.
 - Pilihan ukuran A4, A5, Thermal 80mm, Thermal 58mm.
-- Form bengkel, pelanggan, kendaraan, nomor nota, tanggal.
-- Tabel barang/jasa dengan Qty, harga, subtotal otomatis.
-- Diskon, total, uang dibayar, kembalian otomatis.
-- Simpan, lihat preview, hapus, dan print nota.
-- Responsive dan animasi transisi.
+- Informasi Bengkel Honda, pembeli, kendaraan, tanggal, dan nomor nota.
+- Tabel barang/jasa: Qty, harga, subtotal otomatis.
+- Diskon, total, pembayaran, dan kembalian otomatis.
+- Preview, hapus nota, dan print sesuai ukuran.
+- Animasi Framer Motion dan responsive layout.
 
 ## Menjalankan
-1. Install Node.js 20+.
-2. `npm install`
-3. Buat project Supabase.
-4. Jalankan isi `supabase/schema.sql` di Supabase SQL Editor.
-5. Salin `.env.example` menjadi `.env.local`, lalu isi URL dan anon key Supabase.
-6. `npm run dev` lalu buka http://localhost:3000
+1. Gunakan Node.js 20 atau lebih baru.
+2. Jalankan `npm install`.
+3. Jalankan `npm run dev`.
+4. Buka `http://localhost:3000`.
 
-## Catatan keamanan
-Starter ini memakai kebijakan RLS terbuka untuk memudahkan uji coba single-workshop. Jangan gunakan kebijakan publik tersebut untuk aplikasi produksi yang terbuka ke internet. Tambahkan autentikasi dan policy berbasis user/workshop, atau pindahkan akses database ke server dengan service-role key yang disimpan hanya di server (jangan pernah memakai service-role key dengan prefix NEXT_PUBLIC).
+## Penyimpanan lokal — penting
+Nota disimpan di localStorage browser/perangkat. Data tetap ada setelah halaman ditutup atau di-refresh, tetapi:
+- Data hanya tersedia di browser dan perangkat tempat nota dibuat.
+- Data dapat hilang jika data situs/browser dihapus atau pengguna memakai mode privat.
+- Data tidak otomatis tersinkron ke perangkat lain.
+- Vercel hanya meng-host aplikasi; data nota tidak disimpan di server Vercel.
+
+Untuk pemakaian awal satu HP, ini sesuai. Sebaiknya ekspor/cadangkan data secara berkala sebelum membersihkan data browser.
